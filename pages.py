@@ -9,11 +9,13 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class BasePage(object):
     def __init__(self, driver):
+        # Private field
         self._driver = driver
 
     @property
     def driver(self):
-        """ Returns executing driver """
+        """ Returns executing driver. Does not contain any setter so the property is read-only.
+         It is needed for the page being executable by only driver that was given in constructor"""
         return self._driver
 
 
