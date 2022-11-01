@@ -3,6 +3,8 @@ from locators import LoginPageLocators, MainPageLocators
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
 
+WAIT_TIMEOUT = 100
+
 
 class BasePageElement(object):
     """ Descriptor class for pages elements """
@@ -10,7 +12,7 @@ class BasePageElement(object):
 
     def __set__(self, obj, value):
         driver = obj.driver
-        elem: WebElement = WebDriverWait(driver, 100).until(
+        elem: WebElement = WebDriverWait(driver, WAIT_TIMEOUT).until(
             lambda driver: driver.find_element(*self.locator)
         )
         elem.clear()
@@ -18,7 +20,7 @@ class BasePageElement(object):
 
     def __get__(self, obj, owner):
         driver = obj.driver
-        return WebDriverWait(driver, 100).until(
+        return WebDriverWait(driver, WAIT_TIMEOUT).until(
             lambda driver: driver.find_element(*self.locator)
         )
 

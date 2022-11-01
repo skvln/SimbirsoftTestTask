@@ -1,3 +1,4 @@
+from elements import WAIT_TIMEOUT
 from pages import GMailLoginPage
 
 import pytest
@@ -34,7 +35,7 @@ def login_page(request):
     """ Fixture that helps to reach the Gmail login page """
     driver = webdriver.Remote(command_executor=GridHost.URL, options=request.param())
     login_page = GMailLoginPage(driver)
-    WebDriverWait(driver, 100).until(login_page.reach)
+    WebDriverWait(driver, WAIT_TIMEOUT).until(login_page.reach)
     create_screenshot(login_page, "Reached login page")
     yield login_page
     driver.quit()
