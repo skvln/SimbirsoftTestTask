@@ -1,10 +1,12 @@
+from typing import Optional
+
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
 from elements import LoginInputFieldElement, PasswdInputFieldElement, \
     DestinationFieldElement, SubjectFieldElement, MessageTextboxElement
 from locators import LoginPageLocators, MainPageLocators
-
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 
 class BasePage(object):
@@ -15,7 +17,7 @@ class BasePage(object):
     @property
     def driver(self):
         """ Returns executing driver. Does not contain any setter so the property is read-only.
-         It is needed for the page being executable by only driver that was given in constructor"""
+            It is needed for the page being executable by only driver that was given in constructor"""
         return self._driver
 
 
@@ -28,10 +30,27 @@ class GMailPage(BasePage):
 class GMailLoginPage(GMailPage):
     login_field = LoginInputFieldElement()
 
-    def reach(self, *args):
-        """ Method that helps us to reach needed page """
-        self.driver.get('http://gmail.com')
-        return self.is_title_matches()
+    def __init__(self, driver, address: Optional[str] = None):
+        """ Initializes parent class and sets address field to a given value
+            or, if not given, to a default value """
+        super().__init__(driver)
+        if address is None:
+            self._address = 'http://gmail.com'
+        else:
+            self._address = address
+
+    @property
+    def address(self) -> str:
+        """ Returns string containing an address of login page. Read-only property """
+        return self._address
+
+    def reach(self):
+        """ Method that helps us to reach needed page.
+            Returns a subfunction that gets unnecessary driver as argument for WebDriverWait.until calls """
+        def _reach(driver=None):
+            self.driver.get(self.address)
+            return self.is_title_matches()
+        return _reach
 
     def click_next_button(self):
         """ Clicks next button on login input screen """
