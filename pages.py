@@ -44,12 +44,13 @@ class GMailLoginPage(GMailPage):
         """ Returns string containing an address of login page. Read-only property """
         return self._address
 
-    def reach(self, *args) -> bool:
+    def reach(self):
         """ Method that helps us to reach needed page.
-            Unused *args is needed to be provided to WebDriverWait.until method
-            which gives values unused in this method as arguments """
-        self.driver.get(self.address)
-        return self.is_title_matches()
+            Returns a subfunction that gets unnecessary driver as argument for WebDriverWait.until calls """
+        def _reach(driver=None):
+            self.driver.get(self.address)
+            return self.is_title_matches()
+        return _reach
 
     def click_next_button(self):
         """ Clicks next button on login input screen """
