@@ -12,16 +12,17 @@ class BasePageElement(object):
 
     def __set__(self, obj, value):
         driver = obj.driver
-        elem: WebElement = WebDriverWait(driver, WAIT_TIMEOUT).until(
-            lambda driver: driver.find_element(*self.locator)
+        WebDriverWait(driver, WAIT_TIMEOUT).until(
+            lambda x: x.find_element(*self.locator).is_enabled()
         )
+        elem = driver.find_element(*self.locator)
         elem.clear()
         elem.send_keys(value)
 
     def __get__(self, obj, owner):
         driver = obj.driver
         return WebDriverWait(driver, WAIT_TIMEOUT).until(
-            lambda driver: driver.find_element(*self.locator)
+            lambda x: x.find_element(*self.locator)
         )
 
 

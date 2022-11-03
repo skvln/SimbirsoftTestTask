@@ -5,7 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from elements import LoginInputFieldElement, PasswdInputFieldElement, \
-    DestinationFieldElement, SubjectFieldElement, MessageTextboxElement
+    DestinationFieldElement, SubjectFieldElement, MessageTextboxElement, WAIT_TIMEOUT
 from locators import LoginPageLocators, MainPageLocators
 
 
@@ -20,11 +20,16 @@ class BasePage(object):
             It is needed for the page being executable by only driver that was given in constructor"""
         return self._driver
 
+    def is_title_matches(self, title: Optional[str] = None):
+        if title is None:
+            raise ValueError("Title must be not None")
+        return title in self.driver.title
+
 
 class GMailPage(BasePage):
     def is_title_matches(self):
         """ Method that checks if driver reached Gmail by scanning page title """
-        return 'Gmail' in self.driver.title
+        return super().is_title_matches('Gmail')
 
 
 class GMailLoginPage(GMailPage):
@@ -74,41 +79,53 @@ class GMailMainPage(GMailPage):
 
     def click_write_message_button(self):
         """ Clicks on button that open letter writing dialog box """
-        WebDriverWait(self.driver, 100).until(
+        WebDriverWait(self.driver, WAIT_TIMEOUT).until(
             lambda driver: driver.find_element(*MainPageLocators.WRITE_MESSAGE_BUTTON)
         ).click()
 
-    def count_messages(self) -> int:
+    def count_messages(self, subject) -> int:
         """ Finds count of letters with given subject """
-        return len(self.driver.find_elements(*MainPageLocators.MESSAGES_TO_COUNT_ELEMENTS))
+        mode, value = MainPageLocators.MESSAGES_TO_COUNT_ELEMENTS
+        value = value.format(subject)
+        return len(self.driver.find_elements(mode, value))
 
     def send_message(self) -> None:
         """ Sends message using hotkeys in letter writing dialog box """
         self.message_textbox.send_keys(Keys.CONTROL + Keys.RETURN)
 
-    def check_message_with_count(self, count: int) -> bool:
+    def check_message_with_content(self, subject: str, expected_content: str) -> bool:
         """ Checks if message with count contains needed number """
-        return WebDriverWait(self.driver, 100).until(
-            lambda driver: driver.find_element(*MainPageLocators.MESSAGE_WITH_COUNT_ELEMENT)
-        ).text[4:] == str(count)  # Skipping first 4 symbols as they are " - \n"
+        substr_to_skip = ' - \n'
+        mode, value = MainPageLocators.MESSAGE_WITH_COUNT_ELEMENT
+        elem = WebDriverWait(self.driver, WAIT_TIMEOUT).until(
+            lambda driver: driver.find_element(mode, value.format(subject))
+        )
+        return elem.text[len(substr_to_skip):] == expected_content  # Skipping first 4 symbols as they are " - \n"
 
     def wait_for_dialog_box(self):
         """ Waits for message writing dialog box to appear """
-        WebDriverWait(self.driver, 100).until(
+        WebDriverWait(self.driver, WAIT_TIMEOUT).until(
             EC.presence_of_element_located(MainPageLocators.DIALOG_BOX_ELEMENT)
         )
 
-    def wait_for_count_in_sent_message_to_appear(self):
+    def wait_for_count_in_sent_message_to_appear(self, subject: str):
         """ Waits for message sent automatically to appear """
-        WebDriverWait(self.driver, 100).until(
-            EC.text_to_be_present_in_element(MainPageLocators.MESSAGE_WITH_COUNT_ELEMENT, ' - ')
+        mode, value = MainPageLocators.MESSAGE_WITH_COUNT_ELEMENT
+        value = value.format(subject)
+        locator = tuple([mode, value])
+        WebDriverWait(self.driver, WAIT_TIMEOUT).until(
+            EC.text_to_be_present_in_element(locator, ' - ')
         )
 
-    def wait_for_messages_to_count_to_appear(self):
+    def wait_for_messages_to_count_to_appear(self, subject: str):
         """ Waits for appearance of messages that need to be counted """
-        WebDriverWait(self.driver, 100).until(
-            EC.presence_of_element_located(MainPageLocators.MESSAGES_TO_COUNT_ELEMENTS)
+        mode, value = MainPageLocators.MESSAGES_TO_COUNT_ELEMENTS
+        value = value.format(subject)
+        locator = tuple([mode, value])
+        WebDriverWait(self.driver, WAIT_TIMEOUT).until(
+            EC.presence_of_element_located(locator)
         )
+
 
 
 
