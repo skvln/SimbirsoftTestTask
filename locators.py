@@ -1,6 +1,9 @@
+from dataclasses import dataclass
+
 from selenium.webdriver.common.by import By
 
 
+@dataclass(frozen=True)
 class LoginPageLocators(object):
     """ Locators for login page """
     LOGIN_INPUT_FIELD = (By.NAME, 'identifier')
@@ -9,6 +12,7 @@ class LoginPageLocators(object):
     PASSWORD_NEXT_BUTTON = (By.XPATH, r'.//div[@id="passwordNext"]//button')
 
 
+@dataclass(frozen=True)
 class MainPageLocators(object):
     """ Locators for main page """
     WRITE_MESSAGE_BUTTON = (By.XPATH, r'.//div[@role="navigation"]'
