@@ -1,22 +1,26 @@
-from elements import WAIT_TIMEOUT
-from pages import GMailLoginPage
+from dataclasses import dataclass
 
-import pytest
 import allure
-
+import pytest
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 
+from elements import WAIT_TIMEOUT
+from pages import GMailLoginPage
 
+
+@dataclass(frozen=True)
 class GridHost(object):
     URL = 'http://localhost:4444'
 
 
+@dataclass(frozen=True)
 class Credentials(object):
     EMAIL = 'simbir.test.task@gmail.com'
     PASSWD = 'simbirtest'
 
 
+@dataclass(frozen=True)
 class LetterData(object):
     SUBJECT = 'Simbirsoft Тестовое задание. Скворцов'
 
