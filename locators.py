@@ -21,8 +21,8 @@ class MainPageLocators(object):
     SUBJECT_FIELD = (By.XPATH, r'.//*[contains(@name, "subject")]')
     MESSAGE_TEXTBOX = (By.XPATH, r'.//table//div[@role="textbox"]')
     MESSAGES_TO_COUNT_ELEMENTS = (By.XPATH, r'.//div[@class="UI"]//table//div[@role="link"]'
-                                            r'//span[text()="{}}"]')
+                                            r'//span[text()="{}"]')
     MESSAGE_WITH_COUNT_ELEMENT = (By.XPATH, r'.//div[@role="link"]'
-                                            r'//*[contains(text(), "{}}")]'
+                                            r'//*[contains(text(), "{}")]'
                                             r'/../../../span')
     DIALOG_BOX_ELEMENT = (By.XPATH, r'.//div[@role="dialog"]')
